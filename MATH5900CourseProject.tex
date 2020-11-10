@@ -1,0 +1,54 @@
+\documentclass[12pt]{article}\usepackage{indentfirst}\usepackage[margin=2cm]{geometry}
+\begin{document}
+	\title{\Huge{How to Present a Join the Shortest Queue with Delayed Information}}\author{Brendan Maher 100790390}\date{9$^{th}$ December 2016}\maketitle\tableofcontents\newpage
+	\section{Introduction}
+	This report will be dealing with a Two Demand Join the Shortest Queue aka TDJSQ.  There will be a queue 1 and a queue 2 each represented by the number of subjects waiting to be served.  Normally these two numbers, and the probabilities of them increasing or decreasing could be organized into a two dimensional Markov Chain, but such an arrangement depends the state being updated for each change.  Instead this model will include the last update as when either queue decreases, in other words whenever one of the subjects are served.
+	\section{Reduced Coordinates as a Cell}
+	For the start the model can be represented by possibility vector space $S_r=(Q_1,Q_2)$.
+	\\Where $Q_1\in\{0,1,\dots\}\#$ of subjects in Queue 1, and $Q_2\in\{0,1,\dots\}\#$ of subjects in Queue 2.
+	\\For instance $S_r=(0,7)$ refers to when Queue 1 is empty and Queue 2 has 7 subjects.
+	\\While instead $S_r=(4,1)$ refers to when Queue 1 has 4 subjects and Queue 2 has only 1.
+	\\The queues can be finite or infinite, but the model being used is assumed to be infinite.  This only refers to the bare minimum of information in other words the reduced coordinates or cell.
+	\section{Transfer Probabilities}
+	Right away this model can be represented by a Stochastic Process which describes how a set of random variables changes over time or space.  Every possible combination of the variables in the set can be called its own state, and a sequence of states can be organized as a sequence of events.  For the reduced model we can have $T_{r,k}=(i,j)$ which shows that event k has $S_r=(i,j)$.  Each state as well as every transfer from said state to another will have its own probability.
+	\\$P_{(i,j)}=$ P$(T_{r,\infty}=(i,j))$, $P_{(i,j)(p,q)}=$ P$(T_{r,k}=(i,j),T_{r,k+1}=(p,q)$ st $k\geq-1,\,i,p \in Q_1,\,j,q \in Q_2$
+	\\Not all transfers will have a value since the model being used only has events occurring when a subject is served, and so the model has $P_{(i,j)(i+k,j+q)},P_{(i,j)(i+p,j+k)},P_{(i,j)(i+p,j+q)}=0$ st $k\geq-1>p,q$
+	\section{Rates of Service and Arrival}
+	For this model following a Two Demand Join The Shortest Queue also falls into a two dimensional Birth Death Process.  This means each variable can only increase or decrease by rates of one.  These rates stay consistent, and can be organized as having in arrival rate of $\lambda$, as well as service rates $\gamma_1$ for queue 1 and $\gamma_2$ for queue 2.  While subjects should arrive and be served by either queue at a steady rate, arriving subjects may not actually join the shortest queue, dependant on how many subjects are already queued up.  The model can use $\omega=\lambda+\gamma_1+\gamma_2, \alpha=\lambda/\omega, \beta_1=\gamma_1/\omega, \beta_2=\gamma_2/\omega$ as well as $\omega_1=\lambda+\gamma_1, \alpha_1=\lambda/\omega_1, \beta_{01}=\gamma_1/\omega_1, \omega_2=\lambda+\gamma_2, \alpha_2=\lambda/\omega_2, \beta_{02}=\gamma_1/\omega_2$
+	\\Each cell $S_r=(i,j)$ has a join probability $0 \leq J_{i,j} \leq 1$ where $0<p,q$ shows $ J_{0,0}=\alpha_{0,0}=1-\eta_{0,0}$
+	\\$\alpha_{p,q}=J_{p,q}\alpha, \eta_{p,q}=(1-J_{p,q})\alpha, \alpha_{p,0}=J_{p,0}\alpha_1, \eta_{p,0}=(1-J_{p,0})\alpha_1, \alpha_{0,q}=J_{0,q}\alpha_2, \eta_{0,q}=(1-J_{0,q})\alpha_2$,
+	\\as well as choose probabilities for both queues $0 \leq C_{i,j,1}, C_{i,j,2} \leq 1$ st $C_{i,j,1}+C_{i,j,2}=1$.
+	\\The model is a TDJSQ so $k>0\leq i,i-k$ has $C_{i,i-k,1}=0, C_{i-k,i,1}=1, C_{i,i,1}=t_1$ for Queue 1.
+	\\$i,j,k+1\geq0, P_{(i+1,j+1)(i,j+1)}=\beta_1, P_{(i+1,0)(i,0)}=\beta_{01}, P_{(i+1,j+1)(i+1,j)}=\beta_2, P_{(0,j+1)(0,j)}=\beta_{02},\\P_{(i,i+k)(i+1,i+k)}=\alpha_{i,i+k}, P_{(j+k,j)(j+k,j+1)}=\alpha_{j+k,j}, P_{(i,i)(i+1,i)}=t_1\alpha_{i,i}, P_{(j,j)(j,j+1)}=t_2\alpha_{j,j},\\P_{(i,j)(i,j)}=\eta_{i,j}, P_{(i,j)(i+p,j+q)}=0, |p|+|q|>1, or\;p+i>i>j, or\;i<j<j+q$
+	\section{Making a Markov Chain}
+		\subsection{Accounting for Delayed Information}
+		The idea of a Markov Chain is a special case of the Stochastic Process where each event only relies on the previous event.  In other words if for a sequence of events in the reduced model $T_r=\{T_{r,0},T_{r,1},T_{r,2},\cdots,T_{r,n}\in S_r\} $ is given then Cov$(T_{r,i+j},T_{r,i-1})=0<j$.  The reduced model already makes a Markov Chain before any delay in information since any increase or decrease of the queues must happen one at a time.  Once delays of information are implemented though making a Markov chain becomes much more complicated.  The delays of information for this model are confined to when a subject is served.  Subjects that arrive per to the last time a queue decreased, in other words a subject arrives and will join a queue, not per the actual amount in each queue, but by the amount in each since a subject was served.
+		\subsection{Problems with Only Using Reduced Coordinates}
+		With delayed information on each reduced state or cell $S_r=(i,j)$, the transfer probabilities $P_{(i,j)(p,q)}$ are no longer known.  An interum at $T_{r,n}$ can give a sequence of events $T_{r,n-u}=(p,q)\to T_{r,n}=(i,j)\to T_{r,n+m}=(x,y)$ such that a subject is served only at $n$ or $n+m$.  With all possible starting cells $(p,q)$ and interum cell $(i,j)$ all ending cells $(x,y)$ are given below.
+		\begin{tabular}{c|cc|cc}
+			\hline$i<j$&$i+1+j+1-q>p<q=j,j+1$&\multicolumn{2}{|c|}{$i+1\geq p=q$}&$i,i+1=p>q$
+			\\&\multicolumn{1}{c}{$j=y$}&$i>x$&\multicolumn{1}{|c}{$j-1=y$}&$i\geq x$
+			\\\hline$i=j$&$p<q=j,j+1$&\multicolumn{2}{|c|}{$i\geq p=q\leq j$}&$i,i+1=p>q$
+			\\&\multicolumn{4}{c}{$i-x+j-y,i-x,j-y\leq 1$}
+			\\\hline$i>j$&$p<q=j,j+1$&\multicolumn{2}{|c|}{$p=q\leq j+1$}&$i,i+1=p>q<i+1+j+1-p$
+			\\&\multicolumn{1}{c}{$j>y$}&$i=x$&\multicolumn{1}{c}{$j\geq y$}&$i-1=x$
+			\\\hline\end{tabular}
+		The sequence $T_{r,n-u}\to T_{r,n}$ uses the increasing rate of $a_{p,q}$, while the sequence $T_{r,n}\to T_{r,n+m}$ uses the increasing rate of $a_{i,j}$.  There is no way to discern how many steps $u+m$ were taken, therefore a Markov Chain of current position $T_{r,n}=(i,j)$ can't only rely on $S_r=(i+g,j+h)$ with $gh=0$ and $g,h=0,\pm1$, but has to include all the future and past cells from the table above.  This ends up including an infinite number of cells in not even just one direction.  Even finding the simplest of the transfer probabilities has $k\geq0,\;i<j,\;\omega_{i,j}=\lambda J_{i,j}+\gamma_1+\gamma_2,\;\lambda_{i,j}=\lambda J_{i,j}/\omega_{i,j},\\P_{(i,j)(i+k-1,j)}=\lambda_{i,j}^k\gamma_1/\omega_{i,j},\;P_{(i,j)(i+k,j-1)}=\lambda_{i,j}^k\gamma_2/\omega_{i,j}$.
+		\subsection{Adding the Coordinates of The Last Recorded Event}
+		The coordinates of the last event where a subject was served, can cut down the number of transfer probabilities $P_{(i,j)(p,q)}$ quite effectively.  With the current cell $(i,j)$ and the cell of the last known event $(p,q)$, the model should now be extended as such $\{S_r=(i,j)\}\to \{S=(p,q,i,j)\},\\\{T_{r,n}\in S_r\}\to\{T_n\in S\}, P_{(i,j)(a,b)}\to P_{(p,q,i,j)(x,y,a,b)}, P_{(i,j)}\to P_{(p,q,i,j)}$.  Each service event now has its own level with a start cell, as well as all the future cells that can be reached before the next service, also cut out are all the past cells since the last service.  Many cells are now blank like $\\ P_{(p,q,i,j)}=0\;\forall\;\{i<p,j<q\},\{p<q<j\},\{i>p>q\}$ so, any subject served updates the information which changes the level.  The arrival and service rates start with
+		\\$i,j,\geq p>0<q, P_{(p-1,q-1,i,j)(\ast,\ast,\ast,\ast)}=0, \forall P_{(p-1,q-1,i,j)}=0
+		\\P_{(p,p+q,i,p+q)(p,p+q,i+1,p+q)}=\alpha_{p,p+q}, P_{(p,p,i,j)(p,p,i+1,j)}=t_1\alpha_{p,p}, P_{(p,p+q,i,p+q)(p,p+q,i,p+q)}=\eta_{p,p+q},
+		\\P_{(p+q,p,p+q,j)(p+q,p,p+q,j+1)}=\alpha_{p+q,p}, P_{(p,p,i,j)(p,p,i,j+1)}=t_2\alpha_{p,p}, P_{(p+q,p,p+q,j)(p+q,p,p+q,j)}=\eta_{p+q,p},
+		\\P_{(p,p+q,i,p+q)(i-1,p+q,i-1,p+q)}, P_{(p+q,p,p+q,j)(p+q-1,j,p+q-1,j)}, P_{(p,0,p,q)(p-1,q,p-1,q)}, P_{(0,p,q,p)(q-1,p,q-1,p)}=\beta_1,
+		\\P_{(p,p+q,i,p+q)(i,p+q-1,i,p+q-1)}, P_{(p+q,p,p+q,j)(p+q,j-1,p+q,j-1)}, P_{(p,0,p,q)(p,q-1,p,q-1)}, P_{(0,p,q,p)(q,p-1,q,p-1)}=\beta_2,
+		\\P_{(0,0,p,0)(p-1,0,p-1,0)}, P_{(p,0,p,0)(p-1,0,p-1,0)}=\beta_{01}, P_{(p,0,p,0)(p,0,p,1)}=\alpha_{p,0}\omega/\omega_1, P_{(p,0,p,0)(p,0,p,0)}=\eta_{p,0}\omega/\omega_1,
+		\\P_{(0,0,0,p)(0,p-1,0,p-1)}, P_{(0,p,0,p)(0,p-1,0,p-1)}=\beta_{02}, P_{(0,p,0,p)(0,p,1,p)}=\alpha_{0,p}\omega/\omega_2, P_{(0,p,0,p)(0,p,0,p)}=\eta_{0,p}\omega/\omega_2,
+		\\P_{(p,0,p,q)(p,0,p,q+1)}=\alpha_{p,0}, P_{(p,0,p,q)(p,0,p,q)}=\eta_{p,0}, P_{(0,0,p,q)(p,0,p+1,q)}=t_1\alpha_{0,0},P_{(0,0,0,0)(0,0,1,0)}=t_1J_{0,0},
+		\\P_{(0,p,q,p)(0,p,q+1,p)}=\alpha_{0,p}, P_{(0,p,q,p)(0,p,q,p)}=\eta_{0,p}, P_{(0,0,p,q)(p,0,p,q+1)}=t_2\alpha_{0,0}, P_{(0,0,0,0)(0,0,0,1)}=t_2J_{0,0},
+		\\P_{(0,0,p,0)(0,0,p,1)}=t_2\alpha_{0,0}\omega/\omega_1, P_{(0,0,p,0)(0,0,p+1,0)}=t_1\alpha_{0,0}\omega/\omega_1, P_{(0,0,p,0)(0,0,p,0)}=\eta_{0,0}\omega/\omega_1,
+		\\P_{(0,0,0,p)(0,0,1,p)}=t_1\alpha_{0,0}\omega/\omega_2, P_{(0,0,0,p)(0,0,0,p+1)}=t_2\alpha_{0,0}\omega/\omega_2, P_{(0,0,0,p)(0,0,0,p)}=\eta_{0,0}\omega/\omega_2,
+		\\ P_{(0,0,p,q)(0,0,p,q)}=\eta_{0,0}, P_{(0,0,0,0)(0,0,0,0)}=1-J_{0,0},$ otherwise $P_{(\ast,\ast,\ast,\ast)(\ast,\ast,\ast,\ast)}=0$.
+		\\These transfer probabilities now satisfy for making a Markov Chain, which makes finding the balance equations much easier.  The balance equasions follow the idea that input is equal to output.  $P_{(p,q,i,j)} \sum_{a=0}^{\infty} \sum_{b=0}^{\infty} \sum_{x=0}^{\infty} \sum_{y=0}^{\infty} P_{(p,q,i,j),(a,b,x,y)} =\sum_{a=0}^{\infty} \sum_{b=0}^{\infty} \sum_{x=0}^{\infty} \sum_{y=0}^{\infty} P_{(a,b,x,y)} P_{(a,b,x,y),(p,q,i,j)}$ \\This works since with blank values there are only up to 4 outputs, and although there are infinite inputs they don't take any meandering paths but only straight lines ending at the current full cell.  Each full cell $S$ can be calculated and then summed again to get $\sum_{p=0}^{\infty}\sum_{q=0}^{\infty}P_{(p,q,i,j)}=P_{(i,j)}$.
+	\section{Conclusion}
+	In short by simply adding the actual effecting event, which for this model is the the last instance where a subject was served, goes a long way to finding the probabilities of each state cell.  This method can also be extended to any number of other models such as when there are not just 2 but many queues, or maybe instead of fitting to Join the Shortest Queue it follows a random walk, or the occurrence of an update in information at a certain limit.  So long as the update is tied to position and not time, since making levels from a set or variable length of time has no discernible effect on direction. 
+\end{document}
